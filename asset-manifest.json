@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/heartrate/static/css/main.e6c13ad2.css",
+    "main.js": "/heartrate/static/js/main.52ddd0bb.js",
+    "index.html": "/heartrate/index.html",
+    "main.e6c13ad2.css.map": "/heartrate/static/css/main.e6c13ad2.css.map",
+    "main.52ddd0bb.js.map": "/heartrate/static/js/main.52ddd0bb.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.52ddd0bb.js"
+  ]
+}
