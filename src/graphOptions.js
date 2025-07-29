@@ -13,8 +13,8 @@ const singleMainYAxis = (id, series) => {
     const isMax = y === max;
     plotLines.push({
       value: y,
-      color: isZero ? '#000' : isMin || isMax ? 'black' : '#ccc',
-      width: isZero ? 2 : isMin || isMax ? 1.5 : 1,
+      color: isZero ? 'black' : isMin || isMax ? 'black' : '#ccc',
+      width: isZero ? 1 : isMin || isMax ? 1.5 : 1,
       dashStyle: 'Solid',
       zIndex: 2,
     });
@@ -60,8 +60,7 @@ export const getMainOptions = (series) => {
     },
     xAxis: {
       type: 'linear',
-      tickInterval: 40,
-      minorTickInterval: 40,
+      tickPixelInterval: 65,
       title: { text: 'Время (сек)' },
       labels: {
         style: {
@@ -71,15 +70,15 @@ export const getMainOptions = (series) => {
           return this.value / 1000;
         },
       },
-      plotLines: Array.from({ length: 1500 }, (_, i) => ({
-        color: i % 5 === 0 ? '#ddd' : '#eee',
+      plotLines: Array.from({ length: 1200 }, (_, i) => ({
+        color: i === 0 ? 'black' : i % 5 === 0 ? '#ddd' : '#eee',
         width: i % 5 === 0 ? 1 : 0.5,
-        value: i * 40,
-        zIndex: 0,
+        value: i * 50,
+        zIndex: i === 0 ? 10 : 0,
       })),
     },
     legend: {
-      enabled: true,
+      enabled: false,
       align: 'center',
       verticalAlign: 'bottom',
       layout: 'horizontal',

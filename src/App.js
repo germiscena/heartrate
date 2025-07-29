@@ -30,7 +30,17 @@ function App() {
           containerProps={{ style: { height: '80vh', width: '91vw' } }}
         />
       </div>
-
+      <div
+        style={{
+          position: 'absolute',
+          right: 20,
+          top: '28%',
+          color: 'gray',
+          transform: 'rotate(-90deg)',
+        }}
+      >
+        мкВ
+      </div>
       <div
         style={{
           display: 'flex',
@@ -41,7 +51,7 @@ function App() {
         }}
       >
         <div>
-          <h3>Масштаб 1 клетки - 0.04 сек/100мкВ</h3>
+          <h3>Масштаб 1 клетки - 0.05 сек/100мкВ</h3>
         </div>
         <div style={{ width: '500px', margin: '10px 50px 0px 50px' }}>
           <h3>Объединенный сигнал</h3>
@@ -49,7 +59,7 @@ function App() {
             <p>Количество возбуждений: {dataResult.combined.count}</p>
             <p>
               Средний интервал между отдельными возбуждениями:{' '}
-              {dataResult.combined.avgInterval.toFixed(1)}
+              {Math.round(dataResult.combined.avgInterval) / 1000} сек
             </p>
           </div>
         </div>
