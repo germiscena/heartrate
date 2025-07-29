@@ -2,105 +2,49 @@ import { graphData } from './data';
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 import { analyzeExcitations, parseArrayData } from './utils';
+import { getCalibrationOptions, getMainOptions } from './graphOptions';
 
 function App() {
   const series = parseArrayData(graphData);
 
   const dataResult = analyzeExcitations(graphData);
 
-  const options = {
-    chart: { zoomType: 'y' },
-    title: { text: 'Зависимость амплитуды от времени' },
-    tooltip: {
-      shared: true,
-      formatter: function () {
-        return (
-          `<b>Время: ${this.x} мсек</b><br/>` +
-          this.points.map((p) => `${p.series.name}: ${p.y}`).join('<br/>')
-        );
-      },
-    },
-    xAxis: {
-      type: 'linear',
-      title: { text: 'Время (мсек)' },
-      labels: {
-        formatter: function () {
-          return this.value;
-        },
-      },
-    },
-    legend: {
-      enabled: true,
-      align: 'center',
-      verticalAlign: 'bottom',
-      layout: 'horizontal',
-      itemStyle: {
-        cursor: 'pointer',
-      },
-      itemCheckboxStyle: {
-        position: 'absolute',
-        marginTop: '1px',
-      },
-    },
-    yAxis: { title: { text: 'Значение' } },
-    navigator: {
-      enabled: true,
-      xAxis: {
-        type: 'linear',
-        labels: {
-          formatter() {
-            return this.value;
-          },
-        },
-      },
-    },
-    rangeSelector: { enabled: false },
-    series,
-  };
+  const mainOptions = getMainOptions(series);
 
+  const calibrationOptions = getCalibrationOptions();
   return (
     <div>
-      <HighchartsReact highcharts={Highcharts} options={options} constructorType={'stockChart'} />
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+        <HighchartsReact
+          highcharts={Highcharts}
+          options={calibrationOptions}
+          constructorType={'stockChart'}
+          containerProps={{
+            style: { height: '80vh', width: '8vw', minWidth: '50px' },
+          }}
+        />
+        <HighchartsReact
+          highcharts={Highcharts}
+          options={mainOptions}
+          constructorType={'stockChart'}
+          containerProps={{ style: { height: '80vh', width: '91vw' } }}
+        />
+      </div>
+
       <div
         style={{
           display: 'flex',
           flexDirection: 'row',
-          flexWrap: 'wrap',
+          alignItems: 'center',
           justifyContent: 'space-between',
+          padding: '0px 100px',
         }}
       >
-        <div style={{ width: '500px', margin: '10px 50px' }}>
-          <h1>Канал V4</h1>
-          <div>
-            <p>Количество возбуждений: {dataResult.v1.count}</p>
-            <p>
-              Средний интервал между отдельными возбуждениями:{' '}
-              {dataResult.v1.avgInterval.toFixed(1)}
-            </p>
-          </div>
+        <div>
+          <h3>Масштаб 1 клетки - 0.04 сек/100мкВ</h3>
         </div>
-        <div style={{ width: '500px', margin: '10px 50px' }}>
-          <h1>Канал Ym</h1>
-          <div>
-            <p>Количество возбуждений: {dataResult.v2.count}</p>
-            <p>
-              Средний интервал между отдельными возбуждениями:{' '}
-              {dataResult.v2.avgInterval.toFixed(1)}
-            </p>
-          </div>
-        </div>
-        <div style={{ width: '500px', margin: '10px 50px' }}>
-          <h1>Канал V6</h1>
-          <div>
-            <p>Количество возбуждений: {dataResult.v3.count}</p>
-            <p>
-              Средний интервал между отдельными возбуждениями:{' '}
-              {dataResult.v3.avgInterval.toFixed(1)}
-            </p>
-          </div>
-        </div>
-        <div style={{ width: '500px', margin: '10px 50px' }}>
-          <h1>Объединенный сигнал</h1>
+        <div style={{ width: '500px', margin: '10px 50px 0px 50px' }}>
+          <h3>Объединенный сигнал</h3>
           <div>
             <p>Количество возбуждений: {dataResult.combined.count}</p>
             <p>
