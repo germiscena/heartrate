@@ -1,16 +1,28 @@
 const singleMainYAxis = (id, series) => {
   const dataValues = series[id].data.map((item) => item[1]);
-  const min = Math.floor(Math.min(...dataValues) / 100) * 100;
-  const max = Math.ceil(Math.max(...dataValues) / 100) * 100;
-
-  const step = 100;
-
+  let min;
+  let max;
+  let step;
   const plotLines = [];
+  if (id === 0 || id === 5) {
+    min = Math.floor(Math.min(...dataValues) / 100) * 100;
+    max = Math.ceil(Math.max(...dataValues) / 100) * 100;
+    step = 100;
+  } else if (id === 1 || id === 2) {
+    min = -1;
+    max = 1;
+    step = 0.25;
+  } else if (id === 3 || id === 4) {
+    min = -0.25;
+    max = 1;
+    step = 0.25;
+  }
 
   for (let y = min; y <= max; y += step) {
     const isZero = y === 0;
     const isMin = y === min;
     const isMax = y === max;
+
     plotLines.push({
       value: y,
       color: isZero ? 'black' : isMin || isMax ? 'black' : '#ccc',
@@ -21,8 +33,8 @@ const singleMainYAxis = (id, series) => {
   }
 
   return {
-    top: `${id * 33}%`,
-    height: '32%',
+    top: `${id * 16.1}%`,
+    height: '16%',
     offset: 0,
     lineWidth: 1,
     labels: {
@@ -31,10 +43,11 @@ const singleMainYAxis = (id, series) => {
     },
     tickPositioner: function () {
       const positions = [];
+
       for (let y = min; y <= max; y += step) {
         positions.push(y);
       }
-      return positions;
+      return positions.map((item) => (item % 1 === 0 ? item : Number(item.toFixed(2))));
     },
     gridLineWidth: 0,
     minorTickInterval: null,
@@ -227,5 +240,125 @@ export const getCalibrationOptions = () => {
     credits: { enabled: false },
     yAxis: [singleCalibrateYAxis(0), singleCalibrateYAxis(1), singleCalibrateYAxis(2)],
     series: [singleCalibrateSeries(0), singleCalibrateSeries(1), singleCalibrateSeries(2)],
+  };
+};
+
+export const getMainOptionsNew = (series) => {
+  return {
+    chart: { zoomType: 'x', backgroundColor: 'white', spacingRight: 30 },
+    // title: { text: 'Зависимость амплитуды от времени' },
+    tooltip: {
+      shared: true,
+      formatter: function () {
+        return (
+          `<b>Время: ${this.x} мсек</b><br/>` +
+          this.points
+            .map(
+              (p) =>
+                `${p.series.name}: ${p.y % 1 === 0 ? p.y : p.y.toFixed(6)} ${
+                  p.series.name === 'V4' && 'мкВ'
+                } `,
+            )
+            .join('<br/>')
+        );
+      },
+    },
+    xAxis: {
+      type: 'linear',
+      tickPixelInterval: 65,
+      title: { text: 'Время (сек)' },
+      labels: {
+        style: {
+          whiteSpace: 'nowrap',
+        },
+        formatter: function () {
+          return this.value / 1000;
+        },
+      },
+      plotLines: Array.from({ length: 1200 }, (_, i) => ({
+        color: i === 0 ? 'black' : i % 5 === 0 ? '#ddd' : '#eee',
+        width: i % 5 === 0 ? 1 : 0.5,
+        value: i * 50,
+        zIndex: i === 0 ? 10 : 0,
+      })),
+    },
+    legend: {
+      enabled: false,
+      align: 'center',
+      verticalAlign: 'bottom',
+      layout: 'horizontal',
+      itemStyle: {
+        cursor: 'pointer',
+      },
+      itemCheckboxStyle: {
+        position: 'absolute',
+        marginTop: '1px',
+      },
+    },
+    credits: { enabled: false },
+    yAxis: [
+      singleMainYAxis(0, series),
+      singleMainYAxis(1, series),
+      singleMainYAxis(2, series),
+      singleMainYAxis(3, series),
+      singleMainYAxis(4, series),
+      singleMainYAxis(5, series),
+    ],
+    navigator: {
+      enabled: true,
+      xAxis: {
+        type: 'linear',
+        labels: {
+          formatter() {
+            return this.value;
+          },
+        },
+      },
+    },
+    rangeSelector: { enabled: false },
+    series: [
+      {
+        ...series[0],
+        yAxis: 0,
+        color: 'blue',
+        max: singleMainYAxis(0, series).max,
+        min: singleMainYAxis(0, series).min,
+      },
+      {
+        ...series[1],
+        yAxis: 1,
+        color: 'blue',
+        max: singleMainYAxis(1, series).max,
+        min: singleMainYAxis(1, series).min,
+      },
+      {
+        ...series[2],
+        yAxis: 2,
+        color: 'blue',
+        max: singleMainYAxis(2, series).max,
+        min: singleMainYAxis(2, series).min,
+      },
+      {
+        ...series[3],
+        yAxis: 3,
+        color: 'blue',
+        max: singleMainYAxis(3, series).max,
+        min: singleMainYAxis(3, series).min,
+      },
+      {
+        ...series[4],
+        yAxis: 4,
+        color: 'blue',
+        max: singleMainYAxis(4, series).max,
+        min: singleMainYAxis(4, series).min,
+      },
+      {
+        ...series[5],
+        yAxis: 5,
+        color: 'blue',
+        max: singleMainYAxis(5, series).max,
+        min: singleMainYAxis(5, series).min,
+      },
+    ],
   };
 };
