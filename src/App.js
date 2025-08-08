@@ -84,7 +84,7 @@ function App() {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            height: '85%',
+            height: '80%',
             justifyContent: 'space-evenly',
             minWidth: '180px',
           }}
