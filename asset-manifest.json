@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/heartrate/static/css/main.e6c13ad2.css",
-    "main.js": "/heartrate/static/js/main.eb19829b.js",
+    "main.js": "/heartrate/static/js/main.eb3a116b.js",
     "index.html": "/heartrate/index.html",
     "main.e6c13ad2.css.map": "/heartrate/static/css/main.e6c13ad2.css.map",
-    "main.eb19829b.js.map": "/heartrate/static/js/main.eb19829b.js.map"
+    "main.eb3a116b.js.map": "/heartrate/static/js/main.eb3a116b.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.eb19829b.js"
+    "static/js/main.eb3a116b.js"
   ]
 }
