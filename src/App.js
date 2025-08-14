@@ -1,136 +1,83 @@
 import { graphData } from './data';
-import Highcharts from 'highcharts/highstock';
-import HighchartsReact from 'highcharts-react-official';
-import { analyzeExcitations, parseArrayData } from './utils';
-import { getCalibrationOptions, getMainOptions, getMainOptionsNew } from './graphOptions';
-import {
-  getDifferentiatedSignal,
-  getHighPassFilterSignal,
-  getMovingWindowSignal,
-  getRPeaks,
-  getSquaredSignal,
-} from './SignalConversion';
+import { parseArrayData } from './utils';
+import { newData } from './newData';
+import { useEffect, useState } from 'react';
+import ViewDefault from './defaultECG/viewDefault';
+import ViewQRS from './QRS/viewQRS';
+import ViewZC from './zeroCrossingQrs/viewZC';
 
 function App() {
-  const series = parseArrayData(graphData);
-  const dataResult = analyzeExcitations(graphData);
-  // const mainOptions = getMainOptions(series);
+  const [currentView, setCurrentView] = useState(null);
+  const [currentData, setCurrentData] = useState(null);
+  const [series, setSeries] = useState(null);
 
-  const newSeries = [
-    {
-      name: 'V4',
-      data: series[0].data,
-      dataGrouping: {
-        enabled: false,
-      },
-    },
-    {
-      name: 'Bandpassed',
-      data: getHighPassFilterSignal().series,
-      dataGrouping: {
-        enabled: false,
-      },
-    },
-    {
-      name: 'Differentiated',
-      data: getDifferentiatedSignal().series,
-      dataGrouping: {
-        enabled: false,
-      },
-    },
-    {
-      name: 'Squared',
-      data: getSquaredSignal().series,
-      dataGrouping: {
-        enabled: false,
-      },
-    },
-    {
-      name: 'MovingWindow',
-      data: getMovingWindowSignal().series,
-      dataGrouping: {
-        enabled: false,
-      },
-    },
-    {
-      name: 'Peaks',
-      data: getRPeaks().series,
-      dataGrouping: {
-        enabled: false,
-      },
-    },
-  ];
+  useEffect(() => {
+    if (currentData == 0) {
+      setSeries(parseArrayData(graphData));
+    } else {
+      setSeries(parseArrayData(newData));
+    }
+  }, [currentData]);
 
-  const mainOptionsNew = getMainOptionsNew(newSeries);
-  // const calibrationOptions = getCalibrationOptions();
+  const changeCurrentView = (id) => {
+    currentView !== id && setCurrentView(id);
+  };
+
+  const changeCurrentData = (id) => {
+    currentData !== id && setCurrentData(id);
+  };
+
+  const activeStyle = {
+    background: 'black',
+    color: 'white',
+  };
+
   return (
-    <div>
-      <div style={{ display: 'flex', flexDirection: 'row', height: '100vh' }}>
-        {/* <HighchartsReact
-          highcharts={Highcharts}
-          options={calibrationOptions}
-          constructorType={'stockChart'}
-          containerProps={{
-            style: { height: '80vh', width: '8vw', minWidth: '50px' },
-          }}
-        /> */}
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={mainOptionsNew}
-          constructorType={'stockChart'}
-          containerProps={{ style: { height: '100vh', width: '90vw' } }}
-        />
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: '80%',
-            justifyContent: 'space-evenly',
-            minWidth: '180px',
-          }}
-        >
-          <p style={{ fontSize: '14px' }}>Исходное значение ЭКГ V4</p>
-          <p style={{ fontSize: '14px' }}>High Pass Filter</p>
-          <p style={{ fontSize: '14px' }}>Differentiated</p>
-          <p style={{ fontSize: '14px' }}>Squared</p>
-          <p style={{ fontSize: '14px' }}>Moving Window</p>
-          <p style={{ fontSize: '14px' }}>Peaks</p>
-        </div>
-      </div>
-      {/* <div
-        style={{
-          position: 'absolute',
-          right: 20,
-          top: '28%',
-          color: 'gray',
-          transform: 'rotate(-90deg)',
-        }}
-      >
-        мкВ
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div
         style={{
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0px 100px',
+          width: '80%',
         }}
       >
         <div>
-          <h3>Масштаб 1 клетки - 0.05 сек/100мкВ</h3>
+          <button style={currentView === 0 ? activeStyle : {}} onClick={() => changeCurrentView(0)}>
+            Стандартный вид (3 канала)
+          </button>
+          <button style={currentView === 1 ? activeStyle : {}} onClick={() => changeCurrentView(1)}>
+            Алгоритм PT
+          </button>
+          <button style={currentView === 2 ? activeStyle : {}} onClick={() => changeCurrentView(2)}>
+            Алгоритм KHO
+          </button>
+          <button style={currentView === 3 ? activeStyle : {}} onClick={() => changeCurrentView(3)}>
+            Алгоритм KHO(2)
+          </button>
         </div>
-        <div style={{ width: '500px', margin: '10px 50px 0px 50px' }}>
-          <h3>Объединенный сигнал</h3>
-          <div>
-            <p>Количество возбуждений: {dataResult.combined.count}</p>
-            <p>
-              Средний интервал между отдельными возбуждениями:{' '}
-              {Math.round(dataResult.combined.avgInterval) / 1000} сек
-            </p>
-          </div>
+        <div>
+          <button style={currentData === 0 ? activeStyle : {}} onClick={() => changeCurrentData(0)}>
+            Файл 1
+          </button>
+          <button style={currentData === 1 ? activeStyle : {}} onClick={() => changeCurrentData(1)}>
+            Файл 2
+          </button>
         </div>
-      </div> */}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        {currentData == null || currentView == null ? (
+          'Выберите файл для построения графиков'
+        ) : currentView === 0 ? (
+          <ViewDefault series={series} />
+        ) : currentView === 1 ? (
+          <ViewQRS series={series} />
+        ) : currentView === 2 ? (
+          <ViewZC series={series} variant={1} />
+        ) : (
+          <ViewZC series={series} variant={2} />
+        )}
+      </div>
     </div>
   );
 }
