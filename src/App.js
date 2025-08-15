@@ -12,9 +12,9 @@ function App() {
   const [series, setSeries] = useState(null);
 
   useEffect(() => {
-    if (currentData == 0) {
+    if (currentData === 0) {
       setSeries(parseArrayData(graphData));
-    } else {
+    } else if(currentData===1) {
       setSeries(parseArrayData(newData));
     }
   }, [currentData]);
@@ -31,7 +31,6 @@ function App() {
     background: 'black',
     color: 'white',
   };
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div
@@ -66,7 +65,7 @@ function App() {
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {currentData == null || currentView == null ? (
+        {currentData === null || currentView === null ||series === null? (
           'Выберите файл для построения графиков'
         ) : currentView === 0 ? (
           <ViewDefault series={series} />

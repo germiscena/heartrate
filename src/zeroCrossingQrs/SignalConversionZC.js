@@ -29,20 +29,34 @@ export function preprocessECG(ecg, fs = 400) {
 export function detectThresholdCrossings(new_signal) {
   const lambda2 = 0.99;
   const lambda3 = 0.97;
-
   const d = zeros(new_signal.length);
-  for (let j = 0; j < new_signal.length - 1; j++) {
-    d[j + 1] = 0.5 * Math.abs(sign(new_signal[j + 1]) - sign(new_signal[j]));
-  }
-
   const D = zeros(new_signal.length);
-  for (let j = 0; j < new_signal.length - 1; j++) {
-    D[j + 1] = lambda2 * D[j] + (1 - lambda2) * d[j + 1];
+  const threshold = zeros(new_signal.length);
+  // const d = zeros(new_signal.length);
+  // for (let j = 0; j < new_signal.length - 1; j++) {
+  //   d[j + 1] = 0.5 * Math.abs(sign(new_signal[j + 1]) - sign(new_signal[j]));
+  // }
+
+  // const D = zeros(new_signal.length);
+  // for (let j = 0; j < new_signal.length - 1; j++) {
+  //   D[j + 1] = lambda2 * D[j] + (1 - lambda2) * d[j + 1];
+  // }
+
+  // const threshold = zeros(new_signal.length);
+  // for (let j = 0; j < new_signal.length - 1; j++) {
+  //   threshold[j + 1] = lambda3 * threshold[j] + (1 - lambda3) * D[j + 1];
+  // }
+
+  for (let j = 1; j < new_signal.length; j++) {
+    d[j] = 0.5 * Math.abs(Math.sign(new_signal[j]) - Math.sign(new_signal[j - 1]));
   }
 
-  const threshold = zeros(new_signal.length);
-  for (let j = 0; j < new_signal.length - 1; j++) {
-    threshold[j + 1] = lambda3 * threshold[j] + (1 - lambda3) * D[j + 1];
+  for (let j = 1; j < new_signal.length; j++) {
+    D[j] = lambda2 * D[j - 1] + (1 - lambda2) * d[j];
+  }
+
+  for (let j = 1; j < new_signal.length; j++) {
+    threshold[j] = lambda3 * threshold[j - 1] + (1 - lambda3) * D[j];
   }
 
   const positive = zeros(D.length);
@@ -62,13 +76,12 @@ export function detectThresholdCrossings(new_signal) {
 export function buildEventsFromCrossings(locs_pos, locs_neg) {
   const diffPos = diffArray(locs_pos);
   const diffNeg = diffArray(locs_neg);
-
   const indPos = indicesWhere(diffPos, (v) => v > 1).map((i) => i);
   const indNeg = indicesWhere(diffNeg, (v) => v > 1).map((i) => i);
 
   const upper_limit = indPos.map((i) => locs_pos[i]);
   const lower_limit = indNeg.map((i) => locs_neg[i]);
-
+  // console.log(locs_pos,'uopp',locs_neg)
   const L = Math.min(lower_limit.length, upper_limit.length);
   const events = [];
   for (let j = 0; j < L; j++) {

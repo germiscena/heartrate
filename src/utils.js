@@ -161,7 +161,7 @@ export const getYAxisMainInfo = (dataValues) => {
     max = max * 100;
   }
   const step = getCorrectSteps(min, max);
-  // console.log(min, max, step);
+  // console.log(min, max, step); !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   let plotLines = [];
   for (let i = 0; ; i++) {
     const plotLine = step * i;
@@ -257,8 +257,7 @@ export const getGraphMainInfo = (series) => {
 
 export const getCorrectSteps = (min, max) => {
   const steps = [
-    0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000,
-    250000, 500000,
+    0.01, 0.025, 0.05, 0.1,0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000
   ];
   // const interval = max - min;
   const sumStepsArr = [];

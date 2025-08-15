@@ -62,13 +62,29 @@ export function squaring(signal) {
   return outSignal;
 }
 
-export function zeroCrossingDetection(signal) {
-  const N = signal.length;
-  const d = new Array(N).fill(0);
-  for (let j = 1; j < N; j++) {
-    d[j] = 0.5 * Math.abs(Math.sign(signal[j]) - Math.sign(signal[j - 1]));
+// export function zeroCrossingDetection(signal) {
+//   const N = signal.length;
+//   const d = new Array(N).fill(0);
+//   for (let j = 1; j < N; j++) {
+//     d[j] = 0.5 * Math.abs(Math.sign(signal[j]) - Math.sign(signal[j - 1]));
+//   }
+//   return d;
+// }
+
+export function zeroCrossingDetection(signal, lambda = 0.99) {
+  const len = signal.length;
+  const d = new Array(len).fill(0);
+  const D = new Array(len).fill(0);
+
+  for (let j = 0; j < len - 1; j++) {
+      d[j + 1] = 0.5 * Math.abs(Math.sign(signal[j + 1]) - Math.sign(signal[j]));
   }
-  return d;
+
+  for (let j = 0; j < len - 1; j++) {
+      D[j + 1] = lambda * D[j] + (1 - lambda) * d[j + 1];
+  }
+
+  return D;
 }
 
 export function movingWindowIntegration(signal, fs = 400, windowMs = 150) {
@@ -172,7 +188,7 @@ export function eventDetection(signal) {
 //   return events;
 // }
 
-export function findIntervals({ positive }) {
+export function findIntervals(positive) {
   const intervals = [];
   let start = null;
 
@@ -264,7 +280,7 @@ export function findRPeakLocations(signal, peaks, searchRadius = 10) {
   return refinedPeaks;
 }
 
-export function removeClosePeaks(peakIndices, peakAmps, fs = 400, minDistanceMs = 250) {
+export function removeClosePeaks(peakIndices, peakAmps, fs = 400, minDistanceMs = 10) {
   if (!Array.isArray(peakIndices) || !Array.isArray(peakAmps)) return [];
   if (peakIndices.length === 0) return [];
   const minDistSamples = Math.max(1, Math.round((minDistanceMs / 1000) * fs));

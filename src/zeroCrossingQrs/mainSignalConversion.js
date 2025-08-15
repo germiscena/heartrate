@@ -35,7 +35,7 @@ export function analyzeECGZC(ecg, fs = 400) {
   const dedup = deduplicateByEnd(merged);
   const final_event = filterShortEvents(dedup, 30);
   const peaks = detectRPeaks(final_event, new_signal, fs);
-
+  // console.log(locs_pos, locs_neg)
   const qrsIntervals = getQRSIntervals({ locs_pos, locs_neg });
 
   return {
@@ -62,14 +62,7 @@ export function analyzeECGZC2(ecg) {
   const transformEcg = (filtered) => ecgTime.map((item, i) => [item, filtered[i]]);
   // const filteredSignal = applyFIRFilter(ecgData);
   // const nonlinearizedTransformedSignal = derivativeFilter(filteredSignal).map((item) => item ** 2);
-  // const k = zeros(nonlinearizedTransformedSignal.length);
-  // const lambda = 0.995;
-  // const gain = 4;
-  // for (let j = 0; j < nonlinearizedTransformedSignal.length - 1; j++) {
-  //   k[j + 1] =
-  //     lambda * k[j] + (1 - lambda) * gain * Math.abs(nonlinearizedTransformedSignal[j + 1]);
-  // }
-  // const b = k.map((v, j) => (j % 2 === 0 ? 1 : -1) * v);
+ 
   // const signalWithHF = nonlinearizedTransformedSignal.map((v, i) => v + b[i]);
   // const zeroCrossing = movingWindowIntegration(nonlinearizedTransformedSignal);
   // const { positive, negative, treshold, d } = eventDetection(zeroCrossing);
@@ -80,26 +73,37 @@ export function analyzeECGZC2(ecg) {
   const bandpassCoeffs = getBandPassCoeffs(100, 0.5, 50, 400);
   const filteredSignal = applyFIRFilter(ecgData, bandpassCoeffs);
   const derivative = derivativeFilter(filteredSignal);
-  const nonlinearizedSignal = squaring(derivative);
-  const highFreqComponent = filteredSignal.map((v, i) => v + derivative[i]);
+  // const nonlinearizedSignal = squaring(derivative);
+  const nonlinearizedSignal = derivative.map((item,i)=>item<0?-(item**2):item**2);
+  // const highFreqComponent = filteredSignal.map((v, i) => v + derivative[i]);
+
+  const k = zeros(nonlinearizedSignal.length);
+  const lambda = 0.995;
+  const gain = 4;
+  for (let j = 0; j < nonlinearizedSignal.length - 1; j++) {
+    k[j + 1] =
+      lambda * k[j] + (1 - lambda) * gain * Math.abs(nonlinearizedSignal[j + 1]);
+  }
+  const b = k.map((v, j) => (j % 2 === 0 ? 1 : -1) * v);
+
+  const highFreqComponent = nonlinearizedSignal.map((v, i) => v + b[i]);
   const zeroCrossing = zeroCrossingDetection(highFreqComponent);
 
-  const integratedSignal = movingWindowIntegration(nonlinearizedSignal);
+  const integratedSignal = movingWindowIntegration(highFreqComponent);
   const events = eventDetection(integratedSignal);
   const intervals = findIntervals(events.positive);
   const groupedEvents = groupCloseEvents(intervals);
   const peaksWithAmplitude = determineRPeakAmplitude(filteredSignal, groupedEvents);
   const peakLocations = findRPeakLocations(filteredSignal, peaksWithAmplitude);
-  const finalPeaks = removeClosePeaks(peakLocations, 400, 0.2); // 0.2s минимум
-
+  const finalPeaks = removeClosePeaks(peaksWithAmplitude.map(item=>item.index),peaksWithAmplitude.map(item=>item.amplitude))
   return {
     filteredSignal: transformEcg(filteredSignal),
-    nonlinearizedTransformedSignal: transformEcg(nonlinearizedTransformedSignal),
-    highFrequencyComponentAddedToTheSignal: transformEcg(signalWithHF),
+    nonlinearizedTransformedSignal: transformEcg(nonlinearizedSignal),
+    highFrequencyComponentAddedToTheSignal: transformEcg(highFreqComponent),
     zeroCrossingDetection: transformEcg(zeroCrossing),
     peaks: ecgTime.map((item, i) => [
       item,
-      peaks.map((item) => item.index).includes(i) ? ecgData[i] : 0,
+      finalPeaks.includes(i) ? ecgData[i] : 0,
     ]),
   };
 }
