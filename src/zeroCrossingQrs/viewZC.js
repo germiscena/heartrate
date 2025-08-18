@@ -2,110 +2,121 @@ import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 import { getMainOptionsZC } from './graphOptionsZC';
 import { analyzeECGZC, analyzeECGZC2 } from './mainSignalConversion';
-import { signalConversionZeroCross } from './SignalConversionZC2';
 import { useEffect, useState } from 'react';
 
 function ViewZC({ series, variant }) {
-  const [newSeries, setNewSeries]=useState(null)
+  // const [newSeries, setNewSeries] = useState(null);
 
-  const newSeriesFirst =(obj) => {return [
-    {
-      name: 'V4',
-      data: obj[0].data,
-      dataGrouping: {
-        enabled: false,
+  const newSeriesFirst = (obj) => {
+    return [
+      {
+        name: 'V4',
+        data: obj[0].data,
+        dataGrouping: {
+          enabled: false,
+        },
       },
-    },
-    {
-      name: 'Filtered Signal',
-      data: analyzeECGZC(obj).filteredSignal,
-      dataGrouping: {
-        enabled: false,
+      {
+        name: 'Filtered Signal',
+        data: analyzeECGZC(obj).filteredSignal,
+        dataGrouping: {
+          enabled: false,
+        },
       },
-    },
-    {
-      name: 'Nonlinear Signal',
-      data: analyzeECGZC(obj).nonlinearizedTransformedSignal,
-      dataGrouping: {
-        enabled: false,
+      {
+        name: 'Nonlinear Signal',
+        data: analyzeECGZC(obj).nonlinearizedSignal,
+        dataGrouping: {
+          enabled: false,
+        },
       },
-    },
-    {
-      name: 'Signal with HF',
-      data: analyzeECGZC(obj).highFrequencyComponentAddedToTheSignal,
-      dataGrouping: {
-        enabled: false,
+      {
+        name: 'Signal with HF',
+        data: analyzeECGZC(obj).HFSignal,
+        dataGrouping: {
+          enabled: false,
+        },
       },
-    },
-    {
-      name: 'Zero crossing detection',
-      data: analyzeECGZC(obj).zeroCrossingDetection,
-      dataGrouping: {
-        enabled: false,
+      {
+        name: 'Zero crossing detection',
+        data: analyzeECGZC(obj).zeroCrossingSignal,
+        dataGrouping: {
+          enabled: false,
+        },
       },
-    },
-    {
-      name: 'Peaks',
-      data: analyzeECGZC(obj).peaks,
-      dataGrouping: {
-        enabled: false,
+      {
+        name: 'Peaks',
+        data: analyzeECGZC(obj).peaks,
+        dataGrouping: {
+          enabled: false,
+        },
       },
-    },
-  ];}
+    ];
+  };
 
-  const newSeriesSecond =(obj)=>{return [
-    {
-      name: 'V4',
-      data: obj[0].data,
-      dataGrouping: {
-        enabled: false,
+  const newSeriesSecond = (obj) => {
+    return [
+      {
+        name: 'V4',
+        data: obj[0].data,
+        dataGrouping: {
+          enabled: false,
+        },
       },
-    },
-    {
-      name: 'Filtered Signal',
-      data: analyzeECGZC2(obj).filteredSignal,
-      dataGrouping: {
-        enabled: false,
+      {
+        name: 'Filtered Signal',
+        data: analyzeECGZC2(obj).filteredSignal,
+        dataGrouping: {
+          enabled: false,
+        },
       },
-    },
-    {
-      name: 'Nonlinear Signal',
-      data: analyzeECGZC2(obj).nonlinearizedTransformedSignal,
-      dataGrouping: {
-        enabled: false,
+      {
+        name: 'Nonlinear Signal',
+        data: analyzeECGZC2(obj).nonlinearizedSignal,
+        dataGrouping: {
+          enabled: false,
+        },
       },
-    },
-    {
-      name: 'Signal with HF',
-      data: analyzeECGZC2(obj).highFrequencyComponentAddedToTheSignal,
-      dataGrouping: {
-        enabled: false,
+      {
+        name: 'Signal with HF',
+        data: analyzeECGZC2(obj).HFSignal,
+        dataGrouping: {
+          enabled: false,
+        },
       },
-    },
-    {
-      name: 'Zero crossing detection',
-      data: analyzeECGZC2(obj).zeroCrossingDetection,
-      dataGrouping: {
-        enabled: false,
+      {
+        name: 'Zero crossing detection',
+        data: analyzeECGZC2(obj).zeroCrossingSignal,
+        dataGrouping: {
+          enabled: false,
+        },
       },
-    },
-    {
-      name: 'Peaks',
-      data: analyzeECGZC2(obj).peaks,
-      dataGrouping: {
-        enabled: false,
+      {
+        name: 'Peaks',
+        data: analyzeECGZC2(obj).peaks,
+        dataGrouping: {
+          enabled: false,
+        },
       },
-    },
-  ]}
+    ];
+  };
 
-  useEffect(()=>{
-if(variant===1){
-setNewSeries(newSeriesFirst(series))
-}else if(variant===2){setNewSeries(newSeriesSecond(series))}
-  },[variant,series])
-  
-  if(newSeries===null)return 
-  const mainOptions = getMainOptionsZC(newSeries);
+  // useEffect(() => {
+  //   if (variant === 1) {
+  //     setNewSeries(newSeriesFirst(series));
+  //   } else if (variant === 2) {
+  //     setNewSeries(newSeriesSecond(series));
+  //   }
+  // }, [variant, series]);
+
+  // if (newSeries === null) return;
+
+  // const mainOptions = getMainOptionsZC(newSeries);
+
+  const mainOptions = getMainOptionsZC(
+    variant === 1 ? newSeriesFirst(series) : newSeriesSecond(series),
+  );
+
   return (
     <div>
       <div style={{ display: 'flex', flexDirection: 'row', height: '95vh' }}>

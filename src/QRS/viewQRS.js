@@ -1,7 +1,7 @@
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 import { getMainOptionsQRS } from './graphOptionsQRS';
-import { signalConversion } from './SignalConversion';
+import { signalConversion } from './SignalConversionQRS';
 
 function ViewQRS({ series }) {
   const newSeries = [
