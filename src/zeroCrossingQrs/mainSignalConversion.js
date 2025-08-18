@@ -4,6 +4,7 @@ import {
   detectRPeaks,
   detectThresholdCrossings,
   filterShortEvents,
+  getFinalresult,
   getQRSIntervals,
   mergeEventsTwoStage,
   preprocessECG,
@@ -35,24 +36,27 @@ export function analyzeECGZC(ecg, fs = 400) {
   const dedup = deduplicateByEnd(merged);
   const final_event = filterShortEvents(dedup, 30);
   const peaks = detectRPeaks(final_event, new_signal, fs);
-  // console.log(locs_pos, locs_neg)
   const qrsIntervals = getQRSIntervals({ locs_pos, locs_neg });
+  const {finalPeaks, d,D} = getFinalresult(new_signal, nonlinear)
+
 
   return {
     filteredSignal: transformEcg(filter_signal),
     nonlinearizedTransformedSignal: transformEcg(nonlinear),
     highFrequencyComponentAddedToTheSignal: transformEcg(new_signal),
-    zeroCrossingDetection: ecgTime.map((item, i) => {
-      let includes = false;
-      for (let j = 0; j < qrsIntervals.length; j++) {
-        if (i >= qrsIntervals[j][0] && i <= qrsIntervals[j][1]) {
-          includes = true;
-          break;
-        }
-      }
-      return includes ? [item, ecgData[i]] : [item, 0];
-    }),
-    peaks: ecgTime.map((item, i) => [item, peaks.RR_indexes.includes(i) ? ecgData[i] : 0]),
+    // zeroCrossingDetection: ecgTime.map((item, i) => {
+    //   let includes = false;
+    //   for (let j = 0; j < qrsIntervals.length; j++) {
+    //     if (i >= qrsIntervals[j][0] && i <= qrsIntervals[j][1]) {
+    //       includes = true;
+    //       break;
+    //     }
+    //   }
+    //   return includes ? [item, ecgData[i]] : [item, 0];
+    // }),
+    // peaks: ecgTime.map((item, i) => [item, peaks.RR_indexes.includes(i) ? ecgData[i] : 0]),
+    zeroCrossingDetection:transformEcg(D),
+    peaks:ecgTime.map((item, i) => [item, finalPeaks.includes(i)&&ecgData[i]>0 ? ecgData[i] : 0])
   };
 }
 
@@ -96,6 +100,7 @@ export function analyzeECGZC2(ecg) {
   const peaksWithAmplitude = determineRPeakAmplitude(filteredSignal, groupedEvents);
   const peakLocations = findRPeakLocations(filteredSignal, peaksWithAmplitude);
   const finalPeaks = removeClosePeaks(peaksWithAmplitude.map(item=>item.index),peaksWithAmplitude.map(item=>item.amplitude))
+
   return {
     filteredSignal: transformEcg(filteredSignal),
     nonlinearizedTransformedSignal: transformEcg(nonlinearizedSignal),

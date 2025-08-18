@@ -161,7 +161,8 @@ export const getYAxisMainInfo = (dataValues) => {
     max = max * 100;
   }
   const step = getCorrectSteps(min, max);
-  // console.log(min, max, step); !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // console.log(min, max, step); 
+  
   let plotLines = [];
   for (let i = 0; ; i++) {
     const plotLine = step * i;
