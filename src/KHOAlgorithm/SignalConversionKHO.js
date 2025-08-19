@@ -319,9 +319,9 @@ export function getFinalResult(new_signal, nonlinear) {
       // }
     }
   }
-
+  const new_new_event_filtered = new_new_event.filter((item) => item !== null);
   for (let j = 0; j < new_new_event.length - 1; j++) {
-    if (new_new_event[j][1] === new_new_event[j + 1][1]) {
+    if (new_new_event_filtered[j][1] === new_new_event_filtered[j + 1][1]) {
       new_new_event[j + 1] = null;
     }
   }

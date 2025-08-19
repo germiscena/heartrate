@@ -1,4 +1,5 @@
-import { preprocessECG } from './SignalConversionZC';
+import { preprocessECG } from './SignalConversionKHO';
+import { zeros } from './utils';
 
 export const signalConversionZeroCross = (data) => {
   return {
@@ -31,8 +32,8 @@ export function getBandPassCoeffs(order = 26, f1 = 5, f2 = 30, fs = 400) {
   return coeffs;
 }
 
-export function applyFIRFilter(signal, coeffs) {
-  // const coeffs = getBandPassCoeffs();
+export function applyFIRFilter(signal) {
+  const coeffs = getBandPassCoeffs(100, 0.5, 50, 400);
   const result = [];
   const N = coeffs.length;
   for (let i = 0; i < signal.length; i++) {
@@ -46,7 +47,20 @@ export function applyFIRFilter(signal, coeffs) {
   }
   return result;
 }
+export function getNonlinearizedSignal(signal) {
+  return signal.map((item) => (item < 0 ? -(item ** 2) : item ** 2));
+}
 
+export function getHighFreqSignal(signal) {
+  const k = zeros(signal.length);
+  const lambda = 0.995;
+  const gain = 4;
+  for (let j = 0; j < signal.length - 1; j++) {
+    k[j + 1] = lambda * k[j] + (1 - lambda) * gain * Math.abs(signal[j + 1]);
+  }
+  const b = k.map((v, j) => (j % 2 === 0 ? 1 : -1) * v);
+  return signal.map((v, i) => v + b[i]);
+}
 export function derivativeFilter(signal) {
   const out = [0, 0];
   for (let i = 2; i < signal.length - 2; i++) {
@@ -77,11 +91,11 @@ export function zeroCrossingDetection(signal, lambda = 0.99) {
   const D = new Array(len).fill(0);
 
   for (let j = 0; j < len - 1; j++) {
-      d[j + 1] = 0.5 * Math.abs(Math.sign(signal[j + 1]) - Math.sign(signal[j]));
+    d[j + 1] = 0.5 * Math.abs(Math.sign(signal[j + 1]) - Math.sign(signal[j]));
   }
 
   for (let j = 0; j < len - 1; j++) {
-      D[j + 1] = lambda * D[j] + (1 - lambda) * d[j + 1];
+    D[j + 1] = lambda * D[j] + (1 - lambda) * d[j + 1];
   }
 
   return D;

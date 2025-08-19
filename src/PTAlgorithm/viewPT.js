@@ -1,9 +1,9 @@
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
-import { getMainOptionsQRS } from './graphOptionsQRS';
-import { signalConversion } from './SignalConversionQRS';
+import { getMainOptionsQRS } from './graphOptionsPT';
+import { analyzePT } from './mainConversionPT';
 
-function ViewQRS({ series }) {
+function ViewPT({ series }) {
   const newSeries = [
     {
       name: 'V4',
@@ -14,42 +14,42 @@ function ViewQRS({ series }) {
     },
     {
       name: 'LowPassed',
-      data: signalConversion(series).getLowPassFilterSignal.series,
+      data: analyzePT(series).lowPassSignal,
       dataGrouping: {
         enabled: false,
       },
     },
     {
       name: 'HighPassed',
-      data: signalConversion(series).getHighPassFilterSignal.series,
+      data: analyzePT(series).highPassSignal,
       dataGrouping: {
         enabled: false,
       },
     },
     {
       name: 'Differentiated',
-      data: signalConversion(series).getDifferentiatedSignal.series,
+      data: analyzePT(series).differentiatedSignal,
       dataGrouping: {
         enabled: false,
       },
     },
     {
       name: 'Squared',
-      data: signalConversion(series).getSquaredSignal.series,
+      data: analyzePT(series).squaredSignal,
       dataGrouping: {
         enabled: false,
       },
     },
     {
       name: 'MovingWindow',
-      data: signalConversion(series).getMovingWindowSignal.series,
+      data: analyzePT(series).movingWindowSignal,
       dataGrouping: {
         enabled: false,
       },
     },
     {
       name: 'Peaks',
-      data: signalConversion(series).getRPeaks.series,
+      data: analyzePT(series).peaks.series,
       dataGrouping: {
         enabled: false,
       },
@@ -87,4 +87,4 @@ function ViewQRS({ series }) {
   );
 }
 
-export default ViewQRS;
+export default ViewPT;

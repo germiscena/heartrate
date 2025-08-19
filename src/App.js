@@ -1,10 +1,12 @@
-import { graphData } from './data';
 import { parseArrayData } from './utils';
-import { newData } from './newData';
 import { useEffect, useState } from 'react';
 import ViewDefault from './defaultECG/viewDefault';
-import ViewQRS from './QRS/viewQRS';
-import ViewZC from './zeroCrossingQrs/viewZC';
+import { graphData } from './allData/data';
+import { newData } from './allData/newData';
+import ViewATN from './ATNAlgorithm/viewATN';
+import ViewPT from './PTAlgorithm/viewPT';
+import ViewKHO from './KHOAlgorithm/viewKHO';
+import { peaksCollection, saveFile } from './peaksCollection/peaksCollection';
 
 function App() {
   const [currentView, setCurrentView] = useState(null);
@@ -31,6 +33,13 @@ function App() {
     background: 'black',
     color: 'white',
   };
+
+  const blockedStyle = {
+    color: 'darkgray',
+    background: 'gray',
+    pointerEvents: 'none',
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div
@@ -51,8 +60,11 @@ function App() {
           <button style={currentView === 2 ? activeStyle : {}} onClick={() => changeCurrentView(2)}>
             Алгоритм KHO
           </button>
-          <button style={currentView === 3 ? activeStyle : {}} onClick={() => changeCurrentView(3)}>
+          {/* <button style={currentView === 3 ? activeStyle : {}} onClick={() => changeCurrentView(3)}>
             Алгоритм KHO(2)
+          </button> */}
+          <button style={currentView === 3 ? activeStyle : {}} onClick={() => changeCurrentView(3)}>
+            Алгоритм ATN
           </button>
         </div>
         <div>
@@ -62,6 +74,12 @@ function App() {
           <button style={currentData === 1 ? activeStyle : {}} onClick={() => changeCurrentData(1)}>
             Файл 2
           </button>
+          <button
+            style={{ marginLeft: '10px', ...(currentData === null ? blockedStyle : activeStyle) }}
+            onClick={() => saveFile(peaksCollection(series))}
+          >
+            Сохранить результат
+          </button>
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -70,11 +88,11 @@ function App() {
         ) : currentView === 0 ? (
           <ViewDefault series={series} />
         ) : currentView === 1 ? (
-          <ViewQRS series={series} />
+          <ViewPT series={series} />
         ) : currentView === 2 ? (
-          <ViewZC series={series} variant={1} />
+          <ViewKHO series={series} />
         ) : (
-          <ViewZC series={series} variant={2} />
+          <ViewATN series={series} />
         )}
       </div>
     </div>
