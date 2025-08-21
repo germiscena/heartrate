@@ -2,6 +2,7 @@ export const parseArrayData = (data) => {
   data = data.map((item) => item.split(',').slice(1));
   const [headers, ...rows] = data;
   const tInd = headers.findIndex((i) => i === 't');
+
   const series = { 0: [], 1: [], 2: [] };
 
   rows.forEach((row) => {
@@ -17,23 +18,14 @@ export const parseArrayData = (data) => {
     {
       name: headers[0],
       data: series[0],
-      dataGrouping: {
-        enabled: false,
-      },
     },
     {
       name: headers[1],
       data: series[1],
-      dataGrouping: {
-        enabled: false,
-      },
     },
     {
       name: headers[2],
       data: series[2],
-      dataGrouping: {
-        enabled: false,
-      },
     },
   ];
 };
@@ -94,7 +86,7 @@ export function analyzeExcitations(data) {
   const combinedSignal = [];
   for (let i = 0; i < signals[0].length; i++) {
     const vals = labelIdxes.map((_, chNum) => signals[chNum][i]);
-    const maxAbs = Math.max(...vals.map(Math.abs));
+    const maxAbs = getTopValue(...vals.map(Math.abs), 'max');
     const combinedVal = vals.find((v) => Math.abs(v) === maxAbs);
     combinedSignal.push(combinedVal);
   }
@@ -147,12 +139,27 @@ export const getCorrectYAxisMaximum = (data) => {
   return isNegative ? Number(-result) : Number(result);
 };
 
+export function getTopValue(data, condition) {
+  let max = -Infinity;
+  let min = Infinity;
+  if (condition === 'min') {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i] < min) min = data[i];
+    }
+    return min;
+  } else if (condition === 'max') {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i] > max) max = data[i];
+    }
+    return max;
+  }
+}
+
 export const getYAxisMainInfo = (dataValues) => {
   // let min = Math.floor(Math.min(...dataValues) / 100) * 100;
   // let max = Math.ceil(Math.max(...dataValues) / 100) * 100;
-
-  let min = Math.min(...dataValues);
-  let max = Math.max(...dataValues);
+  let min = getTopValue(dataValues, 'min');
+  let max = getTopValue(dataValues, 'max');
 
   if (!Math.floor(min / 100) === min) {
     min = min * 100;
@@ -161,7 +168,6 @@ export const getYAxisMainInfo = (dataValues) => {
     max = max * 100;
   }
   const step = getCorrectSteps(min, max);
-
   let plotLines = [];
   for (let i = 0; ; i++) {
     const plotLine = step * i;
@@ -196,9 +202,36 @@ export const getYAxisMainInfo = (dataValues) => {
 };
 
 export const getGraphMainInfo = (series) => {
+  const seriesLength = series[0].data.length;
+  const tickCount =
+    seriesLength > 24000
+      ? seriesLength > 72000
+        ? seriesLength > 240000
+          ? 5000
+          : 1000
+        : 500
+      : 100;
   return {
     chart: { zoomType: 'x', backgroundColor: 'white', spacingRight: 30 },
+    // boost: {
+    //   useGPUTranslations: true,
+    //   usePreAllocated: true,
+    // },
+    // plotOptions: {
+    //   series: {
+    //     //     boostThreshold: 1,
+    //     //     turboThreshold: 0,
+    //     animation: false,
+    //     marker: { enabled: false },
+    //     lineWidth: 0.5,
+    //     shadow: false,
+    //     dataLabels: { enabled: false },
+    //     //     enableMouseTracking: true,
+    //     dataGrouping: { enabled: false, approximation: 'extremes', groupPixelWidth: 2 },
+    //   },
+    // },
     tooltip: {
+      enabled: true,
       shared: true,
       formatter: function () {
         return (
@@ -219,10 +252,13 @@ export const getGraphMainInfo = (series) => {
           return this.value / 1000;
         },
       },
-      plotLines: Array.from({ length: (series[0].data.length * 2.5) / 100 }, (_, i) => ({
+      // gridLineWidth: 1,
+      // minorGridLineWidth: 1,
+      //AUTO PLOTLINES
+      plotLines: Array.from({ length: (seriesLength * 2.5) / tickCount }, (_, i) => ({
         color: i === 0 ? 'black' : i % 5 === 0 ? '#ddd' : '#eee',
         width: i % 5 === 0 ? 1 : 0.5,
-        value: i * 100,
+        value: i * tickCount,
         zIndex: i === 0 ? 10 : 0,
       })),
     },

@@ -1,3 +1,5 @@
+import { getTopValue } from '../utils';
+
 export function detectRPeaksATN(signalData, filteredSignal) {
   const [filteredSignal1, filteredSignal2, filteredSignal3, filteredSignal4] = filteredSignal;
   const N = signalData.length;
@@ -19,7 +21,7 @@ export function detectRPeaksATN(signalData, filteredSignal) {
     for (let i = 0; i < v.length; i++) {
       let s = 0,
         c = 0;
-      const a = Math.max(0, i - half),
+      const a = getTopValue((0, i - half), 'max'),
         b = Math.min(v.length - 1, i + half);
       for (let k = a; k <= b; k++) {
         s += v[k];
@@ -189,8 +191,8 @@ export function newDetectRPeaksATN(signalData, filteredSignal) {
 
   function otsuThreshold(arr, bins = 64) {
     if (!arr.length) return 0.2;
-    const min = Math.min(...arr),
-      max = Math.max(...arr);
+    const min = getTopValue(arr, 'min'),
+      max = getTopValue(arr, 'max');
     if (max - min < 1e-12) return min;
     const h = new Array(bins).fill(0);
     for (const v of arr) {

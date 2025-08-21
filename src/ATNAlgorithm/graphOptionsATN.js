@@ -6,7 +6,7 @@ const singleMainYAxisATN = (id, series) => {
 
   return {
     top: `${id * 16.6}%`,
-    height: '16.5%',
+    height: '16%',
     offset: 0,
     lineWidth: 1,
     labels: {

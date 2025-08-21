@@ -5,6 +5,7 @@ import { analyzeATN } from './mainSignalConversion';
 
 function ViewATN({ series }) {
   const covertedSignal = analyzeATN(series);
+
   const newSeries = [
     {
       name: 'V4',

@@ -1,3 +1,4 @@
+import { getTopValue } from '../utils';
 import { conv, designBandpassForECG, find, removeGroupDelayAfterConv, sign, zeros } from './utils';
 
 function normalize(signal) {
@@ -160,8 +161,11 @@ export function detectRPeaks(final_event, nonlinear, fs) {
   for (let j = 0; j < final_event.length; j++) {
     const [start, end] = final_event[j];
     const segment = nonlinear.slice(start, end + 1);
-    abs_max[j] = Math.max(...segment.map(Math.abs));
-    abs_min[j] = Math.abs(Math.min(...segment));
+    const tempValMax = getTopValue(segment, 'max');
+    const tempValMin = getTopValue(segment, 'min');
+    const tempValMaxAbs = Math.abs(tempValMax) > Math.abs(tempValMin) ? tempValMax : tempValMin;
+    abs_max[j] = tempValMaxAbs;
+    abs_min[j] = tempValMin;
   }
 
   const RR_amp = [];
@@ -344,8 +348,8 @@ export function getFinalResult(new_signal, nonlinear) {
   for (let j = 0; j < final_event.length; j++) {
     const [start, end] = final_event[j];
     const segment = nonlinear.slice(start, end + 1).filter((item) => item > 0);
-    abs_max.push(Math.max(...segment));
-    abs_min.push(Math.min(...segment));
+    abs_max.push(getTopValue(segment, 'max'));
+    abs_min.push(getTopValue(segment, 'min'));
   }
 
   const RR_amp = [];

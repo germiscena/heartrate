@@ -1,3 +1,5 @@
+import { getTopValue } from '../utils';
+
 function filter(b, a, x) {
   const y = new Array(x.length).fill(0);
   for (let n = 0; n < x.length; n++) {
@@ -13,8 +15,10 @@ function filter(b, a, x) {
 }
 
 function normalize(signal) {
-  const maxVal = Math.max(...signal.map(Math.abs)) || 1;
-  return signal.map((val) => val / maxVal);
+  const maxVal = getTopValue(signal, 'max') || 1;
+  const minVal = getTopValue(signal, 'min') || 1;
+  const correctVal = Math.abs(maxVal) > Math.abs(minVal) ? maxVal : minVal;
+  return signal.map((val) => val / correctVal);
 }
 
 export function getLowPassFilterSignal(signal) {
@@ -81,7 +85,7 @@ export function getMovingWindowSignal(signal) {
 }
 
 export function getRPeaks(signal, dataSignal) {
-  const maxValue = Math.max(...signal);
+  const maxValue = getTopValue(signal, 'max');
   const avgValue = signal.reduce((sum, val) => sum + val, 0) / signal.length;
   const threshold = avgValue * maxValue;
   const binary = signal.map((val) => (val > threshold ? 1 : 0));

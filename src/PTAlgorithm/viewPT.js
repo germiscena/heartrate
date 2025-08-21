@@ -1,6 +1,6 @@
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
-import { getMainOptionsQRS } from './graphOptionsPT';
+import { getMainOptionsPT } from './graphOptionsPT';
 import { analyzePT } from './mainConversionPT';
 
 function ViewPT({ series }) {
@@ -56,7 +56,7 @@ function ViewPT({ series }) {
     },
   ];
 
-  const mainOptions = getMainOptionsQRS(newSeries);
+  const mainOptions = getMainOptionsPT(newSeries);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'row', height: '95vh' }}>

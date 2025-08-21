@@ -4,8 +4,8 @@ const singleMainYAxisKHO = (id, series) => {
   const dataValues = series[id].data.map((item) => item[1]);
   const { min, max, step, plotLines } = getYAxisMainInfo(dataValues);
   return {
-    top: `${id * 14.3}%`,
-    height: '14.2%',
+    top: `${id * 16.6}%`,
+    height: '16%',
     offset: 0,
     lineWidth: 1,
     labels: {

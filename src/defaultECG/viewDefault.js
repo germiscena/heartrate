@@ -4,6 +4,7 @@ import Highcharts from 'highcharts/highstock';
 
 const ViewDefault = ({ series }) => {
   const mainOptions = getMainOptions(series);
+
   return (
     <HighchartsReact
       highcharts={Highcharts}
