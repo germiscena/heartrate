@@ -1,4 +1,4 @@
-import { getCorrectSteps, getGraphMainInfo, getYAxisMainInfo } from '../utils';
+import { getCorrectSteps, getGraphMainInfo, getYAxisMainInfo } from "../utils";
 
 const singleMainYAxis = (id, series) => {
   const dataValues = series[id].data.map((item) => item[1]);
@@ -6,12 +6,12 @@ const singleMainYAxis = (id, series) => {
 
   return {
     top: `${id * 33}%`,
-    height: '32%',
+    height: "32%",
     offset: 0,
     lineWidth: 1,
     labels: {
       x: 5,
-      align: 'left',
+      align: "left",
     },
     tickPositioner: function () {
       const positions = [];
@@ -27,8 +27,8 @@ const singleMainYAxis = (id, series) => {
   };
 };
 
-export const getMainOptions = (series) => {
-  const mainGraphInfo = getGraphMainInfo(series);
+export const getMainOptions = (series, uploadedSeriesPage) => {
+  const mainGraphInfo = getGraphMainInfo(series, uploadedSeriesPage);
   return {
     ...mainGraphInfo,
     yAxis: [singleMainYAxis(0, series), singleMainYAxis(1, series), singleMainYAxis(2, series)],
@@ -36,21 +36,21 @@ export const getMainOptions = (series) => {
       {
         ...series[0],
         yAxis: 0,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxis(0, series).max,
         min: singleMainYAxis(0, series).min,
       },
       {
         ...series[1],
         yAxis: 1,
-        color: 'green',
+        color: "green",
         max: singleMainYAxis(1, series).max,
         min: singleMainYAxis(1, series).min,
       },
       {
         ...series[2],
         yAxis: 2,
-        color: 'red',
+        color: "red",
         max: singleMainYAxis(1, series).max,
         min: singleMainYAxis(1, series).min,
       },
@@ -61,23 +61,23 @@ export const getMainOptions = (series) => {
 const singleCalibrateYAxis = (id) => {
   const data = {
     0: {
-      title: 'V4',
+      title: "V4",
       x: -52,
-      top: '2%',
+      top: "2%",
     },
     1: {
-      title: 'Ym',
+      title: "Ym",
       x: -75,
-      top: '25%',
+      top: "25%",
     },
-    2: { title: 'V6', x: -106, top: '45%' },
+    2: { title: "V6", x: -106, top: "45%" },
   };
 
   return {
     title: {
       text: data[id].title,
       rotation: 0,
-      align: 'low',
+      align: "low",
       y: 20,
       x: data[id].x,
       style: {
@@ -85,7 +85,7 @@ const singleCalibrateYAxis = (id) => {
       },
     },
     top: data[id].top,
-    height: '20%',
+    height: "20%",
     tickLength: 0,
     labels: { enabled: false },
     gridLineWidth: 0,
@@ -105,7 +105,7 @@ const singleCalibrateSeries = (id) => {
       [3, 0],
     ],
     yAxis: id,
-    color: id === 0 ? 'blue' : id === 1 ? 'green' : 'red',
+    color: id === 0 ? "blue" : id === 1 ? "green" : "red",
     lineWidth: 3,
   };
 };
@@ -113,8 +113,8 @@ const singleCalibrateSeries = (id) => {
 export const getCalibrationOptions = () => {
   return {
     chart: {
-      backgroundColor: 'white',
-      type: 'line',
+      backgroundColor: "white",
+      type: "line",
       scrollablePlotArea: {
         enabled: false,
       },
@@ -139,7 +139,7 @@ export const getCalibrationOptions = () => {
             enabled: false,
           },
         },
-        cursor: 'default',
+        cursor: "default",
       },
     },
     legend: {

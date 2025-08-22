@@ -64,6 +64,7 @@ function App() {
 
   const changeCurrentView = (id) => {
     currentView !== id && setCurrentView(id);
+    uploadedSeriesPage !== 0 && setUploadedSeriesPage(0);
   };
 
   const changeCurrentData = (id) => {
@@ -86,8 +87,6 @@ function App() {
     clearUploadedFileData();
     const reader = new FileReader();
     reader.onload = async (e) => {
-      !!series && setSeries(null);
-      !!currentData && setCurrentData(null);
       setUploadedFile(file);
       if (inputRef) {
         inputRef.current.value = "";
@@ -210,13 +209,13 @@ function App() {
         {currentData === null || currentView === null || series === null ? (
           "Выберите файл для построения графиков"
         ) : currentView === 0 ? (
-          <ViewDefault series={series} />
+          <ViewDefault series={series} uploadedSeriesPage={uploadedSeriesPage} />
         ) : currentView === 1 ? (
-          <ViewPT series={series} />
+          <ViewPT series={series} uploadedSeriesPage={uploadedSeriesPage} />
         ) : currentView === 2 ? (
-          <ViewKHO series={series} />
+          <ViewKHO series={series} uploadedSeriesPage={uploadedSeriesPage} />
         ) : (
-          <ViewATN series={series} />
+          <ViewATN series={series} uploadedSeriesPage={uploadedSeriesPage} />
         )}
       </div>
     </div>

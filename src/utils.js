@@ -201,8 +201,9 @@ export const getYAxisMainInfo = (dataValues) => {
   return { min, max, step, plotLines };
 };
 
-export const getGraphMainInfo = (series) => {
+export const getGraphMainInfo = (series, uploadedSeriesPage) => {
   const seriesLength = series[0].data.length;
+
   const tickCount =
     seriesLength > 24000
       ? seriesLength > 72000
@@ -258,7 +259,7 @@ export const getGraphMainInfo = (series) => {
       plotLines: Array.from({ length: (seriesLength * 2.5) / tickCount }, (_, i) => ({
         color: i === 0 ? "black" : i % 5 === 0 ? "#ddd" : "#eee",
         width: i % 5 === 0 ? 1 : 0.5,
-        value: i * tickCount,
+        value: i * tickCount * (uploadedSeriesPage + 1),
         zIndex: i === 0 ? 10 : 0,
       })),
     },

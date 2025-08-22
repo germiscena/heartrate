@@ -2,8 +2,9 @@ import HighchartsReact from "highcharts-react-official";
 import { getMainOptions } from "./graphOptions";
 import Highcharts from "highcharts/highstock";
 
-const ViewDefault = ({ series }) => {
-  const mainOptions = getMainOptions(series);
+const ViewDefault = ({ series, uploadedSeriesPage }) => {
+  const mainOptions = getMainOptions(series, uploadedSeriesPage);
+
   return (
     <HighchartsReact
       highcharts={Highcharts}

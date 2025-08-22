@@ -1,4 +1,4 @@
-import { getCorrectYAxisMaximum, getGraphMainInfo, getYAxisMainInfo } from '../utils';
+import { getCorrectYAxisMaximum, getGraphMainInfo, getYAxisMainInfo } from "../utils";
 
 const singleMainYAxisPT = (id, series) => {
   const dataValues = series[id].data.map((item) => item[1]);
@@ -6,12 +6,12 @@ const singleMainYAxisPT = (id, series) => {
 
   return {
     top: `${id * 14.3}%`,
-    height: '13.8%',
+    height: "13.8%",
     offset: 0,
     lineWidth: 1,
     labels: {
       x: 5,
-      align: 'left',
+      align: "left",
     },
     tickPositioner: function () {
       const positions = [];
@@ -26,8 +26,8 @@ const singleMainYAxisPT = (id, series) => {
   };
 };
 
-export const getMainOptionsPT = (series) => {
-  const mainGraphInfo = getGraphMainInfo(series);
+export const getMainOptionsPT = (series, uploadedSeriesPage) => {
+  const mainGraphInfo = getGraphMainInfo(series, uploadedSeriesPage);
   return {
     ...mainGraphInfo,
     yAxis: [
@@ -43,49 +43,49 @@ export const getMainOptionsPT = (series) => {
       {
         ...series[0],
         yAxis: 0,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisPT(0, series).max,
         min: singleMainYAxisPT(0, series).min,
       },
       {
         ...series[1],
         yAxis: 1,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisPT(1, series).max,
         min: singleMainYAxisPT(1, series).min,
       },
       {
         ...series[2],
         yAxis: 2,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisPT(2, series).max,
         min: singleMainYAxisPT(2, series).min,
       },
       {
         ...series[3],
         yAxis: 3,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisPT(3, series).max,
         min: singleMainYAxisPT(3, series).min,
       },
       {
         ...series[4],
         yAxis: 4,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisPT(4, series).max,
         min: singleMainYAxisPT(4, series).min,
       },
       {
         ...series[5],
         yAxis: 5,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisPT(5, series).max,
         min: singleMainYAxisPT(5, series).min,
       },
       {
         ...series[6],
         yAxis: 6,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisPT(6, series).max,
         min: singleMainYAxisPT(6, series).min,
       },

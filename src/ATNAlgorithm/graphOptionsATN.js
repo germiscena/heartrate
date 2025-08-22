@@ -1,4 +1,4 @@
-import { getGraphMainInfo, getYAxisMainInfo } from '../utils';
+import { getGraphMainInfo, getYAxisMainInfo } from "../utils";
 
 const singleMainYAxisATN = (id, series) => {
   const dataValues = series[id].data.map((item) => item[1]);
@@ -6,12 +6,12 @@ const singleMainYAxisATN = (id, series) => {
 
   return {
     top: `${id * 16.6}%`,
-    height: '16%',
+    height: "16%",
     offset: 0,
     lineWidth: 1,
     labels: {
       x: 5,
-      align: 'left',
+      align: "left",
     },
     tickPositioner: function () {
       const positions = [];
@@ -26,8 +26,8 @@ const singleMainYAxisATN = (id, series) => {
   };
 };
 
-export const getMainOptionsATN = (series) => {
-  const mainGraphInfo = getGraphMainInfo(series);
+export const getMainOptionsATN = (series, uploadedSeriesPage) => {
+  const mainGraphInfo = getGraphMainInfo(series, uploadedSeriesPage);
   return {
     ...mainGraphInfo,
     yAxis: [
@@ -42,42 +42,42 @@ export const getMainOptionsATN = (series) => {
       {
         ...series[0],
         yAxis: 0,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisATN(0, series).max,
         min: singleMainYAxisATN(0, series).min,
       },
       {
         ...series[1],
         yAxis: 1,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisATN(1, series).max,
         min: singleMainYAxisATN(1, series).min,
       },
       {
         ...series[2],
         yAxis: 2,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisATN(2, series).max,
         min: singleMainYAxisATN(2, series).min,
       },
       {
         ...series[3],
         yAxis: 3,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisATN(3, series).max,
         min: singleMainYAxisATN(3, series).min,
       },
       {
         ...series[4],
         yAxis: 4,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisATN(4, series).max,
         min: singleMainYAxisATN(4, series).min,
       },
       {
         ...series[5],
         yAxis: 5,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisATN(5, series).max,
         min: singleMainYAxisATN(5, series).min,
       },

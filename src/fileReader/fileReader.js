@@ -32,7 +32,7 @@ export function readUploadedFile(fileData, isFirst) {
   return outputArray;
 }
 
-export const PAGE_SIZE = 24000;
+export const PAGE_SIZE = 48000;
 
 // Определение номера страницы
 async function setPageNumber(file, every) {

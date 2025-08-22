@@ -1,16 +1,16 @@
-import { getGraphMainInfo, getYAxisMainInfo } from '../utils';
+import { getGraphMainInfo, getYAxisMainInfo } from "../utils";
 
 const singleMainYAxisKHO = (id, series) => {
   const dataValues = series[id].data.map((item) => item[1]);
   const { min, max, step, plotLines } = getYAxisMainInfo(dataValues);
   return {
     top: `${id * 16.6}%`,
-    height: '16%',
+    height: "16%",
     offset: 0,
     lineWidth: 1,
     labels: {
       x: 5,
-      align: 'left',
+      align: "left",
     },
     tickPositioner: function () {
       const positions = [];
@@ -28,8 +28,8 @@ const singleMainYAxisKHO = (id, series) => {
   };
 };
 
-export const getMainOptionsKHO = (series) => {
-  const mainGraphInfo = getGraphMainInfo(series);
+export const getMainOptionsKHO = (series, uploadedSeriesPage) => {
+  const mainGraphInfo = getGraphMainInfo(series, uploadedSeriesPage);
 
   return {
     ...mainGraphInfo,
@@ -45,42 +45,42 @@ export const getMainOptionsKHO = (series) => {
       {
         ...series[0],
         yAxis: 0,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisKHO(0, series).max,
         min: singleMainYAxisKHO(0, series).min,
       },
       {
         ...series[1],
         yAxis: 1,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisKHO(0, series).max,
         min: singleMainYAxisKHO(0, series).min,
       },
       {
         ...series[2],
         yAxis: 2,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisKHO(2, series).max,
         min: singleMainYAxisKHO(2, series).min,
       },
       {
         ...series[3],
         yAxis: 3,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisKHO(3, series).max,
         min: singleMainYAxisKHO(3, series).min,
       },
       {
         ...series[4],
         yAxis: 4,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisKHO(4, series).max,
         min: singleMainYAxisKHO(4, series).min,
       },
       {
         ...series[5],
         yAxis: 5,
-        color: 'blue',
+        color: "blue",
         max: singleMainYAxisKHO(5, series).max,
         min: singleMainYAxisKHO(5, series).min,
       },
