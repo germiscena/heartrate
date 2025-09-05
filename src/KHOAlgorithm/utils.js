@@ -1,10 +1,8 @@
 export function zeros(n) {
-  if (!Number.isInteger(n) || n < 0) throw new Error('zeros: n must be a non-negative integer');
   return new Array(n).fill(0);
 }
 
 export function sign(x) {
-  if (Number.isNaN(x)) return NaN;
   if (x === 0) return 0;
   return x > 0 ? 1 : -1;
 }
@@ -14,7 +12,7 @@ export function find(arr, predicate) {
   if (typeof predicate === 'function') {
     for (let i = 0; i < arr.length; i++) if (predicate(arr[i], i, arr)) idx.push(i);
   } else {
-    for (let i = 0; i < arr.length; i++) if (arr[i]) idx.push(i); // ненулевые/true
+    for (let i = 0; i < arr.length; i++) if (arr[i]) idx.push(i);
   }
   return idx;
 }
@@ -73,8 +71,6 @@ export function fir1Bandpass(order, wl, wh, window = 'hamming') {
     const ideal = 2 * Wh * sinc(2 * Wh * k) - 2 * Wl * sinc(2 * Wl * k);
     h[n] = ideal * win[n];
   }
-
-  const sum = h.reduce((a, b) => a + b, 0);
   return h;
 }
 

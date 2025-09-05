@@ -3,30 +3,30 @@ export function readUploadedFile(fileData, isFirst) {
   let outputArray = [];
 
   if (isFirst) {
-    header = (fileData[0] + ";t")
+    header = (fileData[0] + ';t')
       .trim()
-      .split(";")
+      .split(';')
       .map((item, i) => {
         if (i === 0) {
-          item = item.split(" ").filter((obj) => obj !== "");
+          item = item.split(' ').filter((obj) => obj !== '');
           return item;
         } else {
           return item;
         }
       })
       .flat()
-      .join(",");
+      .join(',');
     outputArray = [header];
   }
 
   for (let i = isFirst ? 1 : 0; i < fileData.length; i++) {
     const line = fileData[i].trim();
-    const dataIndex = Number(line.split("\t")[0]);
+    const dataIndex = Number(line.split('\t')[0]);
     if (!line) continue;
     const newLine = `${line} \t ${dataIndex * 2.5}`
-      .split("\t")
+      .split('\t')
       .map((item) => item.trim())
-      .join(",");
+      .join(',');
     outputArray.push(newLine);
   }
   return outputArray;
@@ -34,7 +34,6 @@ export function readUploadedFile(fileData, isFirst) {
 
 export const PAGE_SIZE = 48000;
 
-// Определение номера страницы
 async function setPageNumber(file, every) {
   const checkpoints = [0];
   let total = 0;
@@ -64,7 +63,6 @@ async function setPageNumber(file, every) {
   return { totalLines: total, checkpoints, every };
 }
 
-// Получение данных, начиная с определенной страницы
 async function readRange(file, startLine, count, page, isFirst) {
   const every = page.every;
   const checkpoints = page.checkpoints;
@@ -84,25 +82,25 @@ async function readRange(file, startLine, count, page, isFirst) {
     .pipeThrough(
       new TransformStream({
         start() {
-          this.buf = "";
+          this.buf = '';
         },
         transform(chunk, controller) {
           this.buf += chunk;
-          const parts = this.buf.split("\n");
+          const parts = this.buf.split('\n');
           this.buf = parts.pop();
           for (let s of parts) {
-            if (s.endsWith("\r")) s = s.slice(0, -1);
+            if (s.endsWith('\r')) s = s.slice(0, -1);
             controller.enqueue(s);
           }
         },
         flush(controller) {
           if (this.buf) {
             let s = this.buf;
-            if (s.endsWith("\r")) s = s.slice(0, -1);
+            if (s.endsWith('\r')) s = s.slice(0, -1);
             controller.enqueue(s);
           }
         },
-      })
+      }),
     )
     .getReader();
 
@@ -131,43 +129,3 @@ export async function streamUploadedFileData(file, startLine, count, isFirst, pa
   const lines = await readRange(file, startLine, count, page, isFirst);
   return { lines, totalLines: total };
 }
-
-// export async function streamUploadedFileData(file, startLine, count, length) {
-//   const totalCount = count + 1;
-//   const lines = [];
-//   let lineIndex = 0;
-//   const reader = file
-//     .stream()
-//     .pipeThrough(new TextDecoderStream())
-//     .pipeThrough(
-//       new TransformStream({
-//         start() {
-//           this.buffer = '';
-//         },
-//         transform(chunk, controller) {
-//           this.buffer += chunk;
-//           const parts = this.buffer.split('\r\n');
-//           this.buffer = parts.pop();
-//           for (const line of parts) controller.enqueue(line);
-//         },
-//         flush(controller) {
-//           if (this.buffer) controller.enqueue(this.buffer);
-//         },
-//       }),
-//     )
-//     .getReader();
-
-//   while (true) {
-//     const { value: line, done } = await reader.read();
-
-//     if (done) break;
-//     if ((lineIndex === 0 || lineIndex >= startLine) && lines.length < totalCount) {
-//       lines.push(line);
-//     }
-//     if (!length && lines.length >= totalCount) {
-//       break;
-//     }
-//     lineIndex++;
-//   }
-//   return { lines: lines, totalLines: lineIndex };
-// }

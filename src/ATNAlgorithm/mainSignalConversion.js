@@ -1,4 +1,4 @@
-import { detectRPeaksATN, newDetectRPeaksATN } from './detectRPeaks';
+import { newDetectRPeaksATN } from './detectRPeaks';
 import { runFilterBank } from './SignalConversionATN';
 
 export const analyzeATN = (signal) => {
@@ -7,7 +7,6 @@ export const analyzeATN = (signal) => {
   const signalTransform = (data) => signalTime.map((item, i) => [item, data[i]]);
   const [filteredSignal1, filteredSignal2, filteredSignal3, filteredSignal4] =
     runFilterBank(signalData).filtered;
-  // const finalPeaks = detectRPeaksATN(signalData, runFilterBank(signalData).filtered);
   const newPeaks = newDetectRPeaksATN(signalData, runFilterBank(signalData).filtered);
   return {
     filteredSignal1: signalTransform(filteredSignal1),

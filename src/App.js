@@ -1,13 +1,20 @@
-import { parseArrayData } from "./utils";
-import { useEffect, useRef, useState } from "react";
-import ViewDefault from "./defaultECG/viewDefault";
-import { graphData } from "./allData/data";
-import { newData } from "./allData/newData";
-import ViewATN from "./ATNAlgorithm/viewATN";
-import ViewPT from "./PTAlgorithm/viewPT";
-import ViewKHO from "./KHOAlgorithm/viewKHO";
-import { peaksCollection, saveFile } from "./peaksCollection/peaksCollection";
-import { PAGE_SIZE, readUploadedFile, streamUploadedFileData } from "./fileReader/fileReader";
+import { parseArrayData, saveFile } from './utils';
+import { useEffect, useRef, useState } from 'react';
+import ViewDefault from './defaultECG/viewDefault';
+import { graphData } from './allData/data';
+import { newData } from './allData/newData';
+import ViewATN from './ATNAlgorithm/viewATN';
+import ViewPT from './PTAlgorithm/viewPT';
+import ViewKHO from './KHOAlgorithm/viewKHO';
+import {
+  peaksCollection,
+  peaksCollectionCompareWithTraces,
+  peaksCollectionCompareWithTracesSingle,
+} from './peaksCollection/peaksCollection';
+import { PAGE_SIZE, readUploadedFile, streamUploadedFileData } from './fileReader/fileReader';
+import ViewCMD from './CMDAlgorithm/viewCMD';
+import ViewGPT from './GPTAlgorithm/viewGPT';
+import { preprocessSignal } from './preprocessSignal/preprocessSignal';
 
 function App() {
   const [currentView, setCurrentView] = useState(null);
@@ -49,14 +56,14 @@ function App() {
       getStreamData(
         PAGE_SIZE * uploadedSeriesPage,
         PAGE_SIZE,
-        uploadedSeriesLength.length === 0
+        uploadedSeriesLength.length === 0,
       ).then((res) => {
         setUploadedSeries(
           parseArrayData(
             [uploadedSeriesFirstRow].concat(
-              readUploadedFile(res.lines, uploadedSeriesLength.length === 0)
-            )
-          )
+              readUploadedFile(res.lines, uploadedSeriesLength.length === 0),
+            ),
+          ),
         );
       });
     }
@@ -68,7 +75,10 @@ function App() {
   };
 
   const changeCurrentData = (id) => {
-    currentData !== id && setCurrentData(id);
+    id !== currentData && setCurrentData(id);
+    if (uploadedSeriesPage !== 0) {
+      setUploadedSeriesPage(0);
+    }
   };
 
   const clearUploadedFileData = () => {
@@ -82,14 +92,14 @@ function App() {
   const onUploadingFile = (e) => {
     const file = e.target.files[0];
     if (!file) {
-      alert("произошла ошибка, попробуйте снова");
+      alert('произошла ошибка, попробуйте снова');
     }
     clearUploadedFileData();
     const reader = new FileReader();
     reader.onload = async (e) => {
       setUploadedFile(file);
       if (inputRef) {
-        inputRef.current.value = "";
+        inputRef.current.value = '';
       }
     };
     reader.readAsText(file);
@@ -100,7 +110,7 @@ function App() {
       uploadedFile,
       PAGE_SIZE * uploadedSeriesPage,
       PAGE_SIZE,
-      uploadedSeriesLength.length === 0
+      uploadedSeriesLength.length === 0,
     );
 
     !uploadedSeriesLength.length &&
@@ -114,49 +124,97 @@ function App() {
     changeCurrentData(2);
   };
 
-  const getPeaksData = async () => {
+  const getPeaks = async (type) => {
     const currentSeries = currentData === 2 ? await getFullFileData() : series;
-    saveFile(peaksCollection(currentSeries));
+    let peaks;
+    if (type === 'ideal') {
+      peaks = await peaksCollectionCompareWithTracesSingle(series);
+    } else if (type === 'all') {
+      peaks = await peaksCollection(currentSeries);
+    } else if (type === 'compare') {
+      const peaks1 = await peaksCollectionCompareWithTraces(
+        series,
+        [{ data: preprocessSignal(series).savGolayFilteredMLC }],
+        [{ data: preprocessSignal(series).notchFilteredML }],
+        [{ data: preprocessSignal(series).biggestPreprocess.bp }],
+      );
+      const peaks2 = await peaksCollectionCompareWithTraces(
+        series.slice(1),
+        [{ data: preprocessSignal(series.slice(1)).savGolayFilteredMLC }],
+        [{ data: preprocessSignal(series.slice(1)).notchFilteredML }],
+        [{ data: preprocessSignal(series.slice(1)).biggestPreprocess.bp }],
+      );
+      const peaks3 = await peaksCollectionCompareWithTraces(
+        series.slice(2),
+        [{ data: preprocessSignal(series.slice(1)).savGolayFilteredMLC }],
+        [{ data: preprocessSignal(series.slice(1)).notchFilteredML }],
+        [{ data: preprocessSignal(series.slice(1)).biggestPreprocess.bp }],
+      );
+      const filler = Array(peaks1[0].length).fill('-');
+      peaks = peaks1.concat(
+        [filler],
+        [filler],
+        [filler],
+        peaks2,
+        [filler],
+        [filler],
+        [filler],
+        peaks3,
+      );
+    }
+    return peaks;
+  };
+
+  const getPeaksData = async (type) => {
+    const peaks = await getPeaks(type);
+    saveFile(peaks);
   };
 
   const activeStyle = {
-    background: "black",
-    color: "white",
+    background: 'black',
+    color: 'white',
   };
 
   const blockedStyle = {
-    color: "darkgray",
-    background: "gray",
-    pointerEvents: "none",
+    color: 'darkgray',
+    background: 'gray',
+    pointerEvents: 'none',
   };
 
+  const allViewButtons = [
+    { name: 'Стандартный вид (3 канала)', view: 0 },
+    { name: 'Алгоритм PT', view: 1 },
+    { name: ' Алгоритм KHO', view: 2 },
+    { name: ' Алгоритм ATN', view: 3 },
+    { name: ' Алгоритм CMD(1)', view: 4 },
+    { name: 'Алгоритм CMD(2)', view: 5 },
+    { name: ' Алгоритм GPT', view: 7 },
+  ];
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div
         style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          width: "80%",
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          width: '100%',
         }}
       >
         <div>
-          <button style={currentView === 0 ? activeStyle : {}} onClick={() => changeCurrentView(0)}>
-            Стандартный вид (3 канала)
-          </button>
-          <button style={currentView === 1 ? activeStyle : {}} onClick={() => changeCurrentView(1)}>
-            Алгоритм PT
-          </button>
-          <button style={currentView === 2 ? activeStyle : {}} onClick={() => changeCurrentView(2)}>
-            Алгоритм KHO
-          </button>
-          {/* <button style={currentView === 3 ? activeStyle : {}} onClick={() => changeCurrentView(3)}>
-            Алгоритм KHO(2)
-          </button> */}
-          <button style={currentView === 3 ? activeStyle : {}} onClick={() => changeCurrentView(3)}>
-            Алгоритм ATN
-          </button>
-          {uploadedSeriesLength.length !== 0 && (
+          {allViewButtons.map((item) => {
+            return (
+              <button
+                key={item.view}
+                style={currentView === item.view ? activeStyle : {}}
+                onClick={() => changeCurrentView(item.view)}
+              >
+                {item.name}
+              </button>
+            );
+          })}
+
+          {uploadedSeriesLength.length !== 0 && currentData === 2 && (
             <div>
               <button
                 style={uploadedSeriesPage === 0 ? blockedStyle : {}}
@@ -198,25 +256,37 @@ function App() {
             />
           </button>
           <button
-            style={{ marginLeft: "10px", ...(currentData === null ? blockedStyle : activeStyle) }}
-            onClick={getPeaksData}
+            style={{ marginLeft: '10px', ...(currentData === null ? blockedStyle : activeStyle) }}
+            onClick={() => getPeaksData('all')}
           >
             Сохранить результат
           </button>
+          <button
+            style={{ marginLeft: '10px', ...(currentData === null ? blockedStyle : activeStyle) }}
+            onClick={() => getPeaksData('ideal')}
+          >
+            Сохранить результат с идеальным файлом traces
+          </button>
         </div>
       </div>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        {currentData === null || currentView === null || series === null ? (
-          "Выберите файл для построения графиков"
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        {currentView === null || series === null ? (
+          'Выберите файл для построения графиков'
         ) : currentView === 0 ? (
           <ViewDefault series={series} uploadedSeriesPage={uploadedSeriesPage} />
         ) : currentView === 1 ? (
           <ViewPT series={series} uploadedSeriesPage={uploadedSeriesPage} />
         ) : currentView === 2 ? (
           <ViewKHO series={series} uploadedSeriesPage={uploadedSeriesPage} />
-        ) : (
+        ) : currentView === 3 ? (
           <ViewATN series={series} uploadedSeriesPage={uploadedSeriesPage} />
-        )}
+        ) : currentView === 4 ? (
+          <ViewCMD series={series} uploadedSeriesPage={uploadedSeriesPage} type={1} />
+        ) : currentView === 5 ? (
+          <ViewCMD series={series} uploadedSeriesPage={uploadedSeriesPage} type={2} />
+        ) : currentView === 7 ? (
+          <ViewGPT series={series} uploadedSeriesPage={uploadedSeriesPage} />
+        ) : null}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 export const parseArrayData = (data) => {
-  data = data.map((item) => item.split(",").slice(1));
+  data = data.map((item) => item.split(',').slice(1));
   const [headers, ...rows] = data;
-  const tInd = headers.findIndex((i) => i === "t");
+  const tInd = headers.findIndex((i) => i === 't');
 
   const series = { 0: [], 1: [], 2: [] };
 
@@ -9,9 +9,6 @@ export const parseArrayData = (data) => {
     headers.slice(0, -1).forEach((item, i) => {
       series[i].push([Number(row[tInd]), parseFloat(row[i])]);
     });
-    // series.v1.push([t, parseFloat(cols[1])]);
-    // series.v2.push([t, parseFloat(cols[2])]);
-    // series.v3.push([t, parseFloat(cols[3])]);
   });
 
   return [
@@ -31,16 +28,16 @@ export const parseArrayData = (data) => {
 };
 
 export function analyzeExcitations(data) {
-  const dataLabels = data[0].split(",");
-  const labelsNames = ["v1", "v2", "v3"];
-  const timeLabelIdx = dataLabels.indexOf("t");
+  const dataLabels = data[0].split(',');
+  const labelsNames = ['v1', 'v2', 'v3'];
+  const timeLabelIdx = dataLabels.indexOf('t');
   const labelIdxes = labelsNames.map((ch) => dataLabels.indexOf(ch));
 
   const signals = labelIdxes.map(() => []);
   const times = [];
 
   for (let i = 1; i < data.length; i++) {
-    const row = data[i].split(",");
+    const row = data[i].split(',');
     labelIdxes.forEach((idx, chNum) => {
       signals[chNum].push(Number(row[idx]));
     });
@@ -86,7 +83,7 @@ export function analyzeExcitations(data) {
   const combinedSignal = [];
   for (let i = 0; i < signals[0].length; i++) {
     const vals = labelIdxes.map((_, chNum) => signals[chNum][i]);
-    const maxAbs = getTopValue(...vals.map(Math.abs), "max");
+    const maxAbs = getTopValue(...vals.map(Math.abs), 'max');
     const combinedVal = vals.find((v) => Math.abs(v) === maxAbs);
     combinedSignal.push(combinedVal);
   }
@@ -104,18 +101,18 @@ export const getCorrectYAxisMaximum = (data) => {
     currentNumber = -currentNumber;
   }
   for (let i = 0; i < String(currentNumber).length; i++) {
-    if (String(currentNumber)[i] === ".") {
+    if (String(currentNumber)[i] === '.') {
       separatorId = i;
     }
   }
   let firstDigit = Number(String(currentNumber)[0]);
-  let digitNumber = Number("0." + String(currentNumber).slice(1, 2));
+  let digitNumber = Number('0.' + String(currentNumber).slice(1, 2));
   if (digitNumber === 0) {
     return isNegative ? -currentNumber : currentNumber;
   }
-  let result = "";
+  let result = '';
   if (digitNumber > 0.5) {
-    for (let i = 0; i < String(currentNumber).split("").length; i++) {
+    for (let i = 0; i < String(currentNumber).split('').length; i++) {
       if (i === 0) {
         result += firstDigit + 1;
       } else {
@@ -126,7 +123,7 @@ export const getCorrectYAxisMaximum = (data) => {
     }
   } else {
     result += firstDigit;
-    for (let i = 1; i < String(currentNumber).split("").length; i++) {
+    for (let i = 1; i < String(currentNumber).split('').length; i++) {
       if (i === 1) {
         result += 5;
       } else {
@@ -142,12 +139,12 @@ export const getCorrectYAxisMaximum = (data) => {
 export function getTopValue(data, condition) {
   let max = -Infinity;
   let min = Infinity;
-  if (condition === "min") {
+  if (condition === 'min') {
     for (let i = 0; i < data.length; i++) {
       if (data[i] < min) min = data[i];
     }
     return min;
-  } else if (condition === "max") {
+  } else if (condition === 'max') {
     for (let i = 0; i < data.length; i++) {
       if (data[i] > max) max = data[i];
     }
@@ -156,11 +153,8 @@ export function getTopValue(data, condition) {
 }
 
 export const getYAxisMainInfo = (dataValues) => {
-  // let min = Math.floor(Math.min(...dataValues) / 100) * 100;
-  // let max = Math.ceil(Math.max(...dataValues) / 100) * 100;
-  let min = getTopValue(dataValues, "min");
-  let max = getTopValue(dataValues, "max");
-
+  let min = getTopValue(dataValues, 'min');
+  let max = getTopValue(dataValues, 'max');
   if (!Math.floor(min / 100) === min) {
     min = min * 100;
   }
@@ -191,9 +185,9 @@ export const getYAxisMainInfo = (dataValues) => {
       const isMax = i === plotLines.length - 1;
       return {
         value: item,
-        color: isZero ? "black" : isMin || isMax ? "black" : "#ccc",
+        color: isZero ? 'black' : isMin || isMax ? 'black' : '#ccc',
         width: isZero ? 1 : isMin || isMax ? 1.5 : 1,
-        dashStyle: "Solid",
+        dashStyle: 'Solid',
         zIndex: 2,
       };
     });
@@ -213,7 +207,7 @@ export const getGraphMainInfo = (series, uploadedSeriesPage) => {
         : 500
       : 100;
   return {
-    chart: { zoomType: "x", backgroundColor: "white", spacingRight: 30 },
+    chart: { zoomType: 'x', backgroundColor: 'white', spacingRight: 30 },
     // boost: {
     //   useGPUTranslations: true,
     //   usePreAllocated: true,
@@ -228,7 +222,7 @@ export const getGraphMainInfo = (series, uploadedSeriesPage) => {
         //     shadow: false,
         //     dataLabels: { enabled: false },
         //     //     enableMouseTracking: true,
-        dataGrouping: { enabled: false, approximation: "extremes", groupPixelWidth: 2 },
+        dataGrouping: { enabled: false, approximation: 'extremes', groupPixelWidth: 2 },
       },
     },
     tooltip: {
@@ -237,17 +231,17 @@ export const getGraphMainInfo = (series, uploadedSeriesPage) => {
       formatter: function () {
         return (
           `<b>Время: ${this.x} мсек</b><br/>` +
-          this.points.map((p) => `${p.series.name}: ${p.y}`).join("<br/>")
+          this.points.map((p) => `${p.series.name}: ${p.y}`).join('<br/>')
         );
       },
     },
     xAxis: {
-      type: "datetime",
+      type: 'datetime',
       tickPixelInterval: 65,
-      title: { text: "Время (сек)" },
+      title: { text: 'Время (сек)' },
       labels: {
         style: {
-          whiteSpace: "nowrap",
+          whiteSpace: 'nowrap',
         },
         formatter: function () {
           return this.value / 1000;
@@ -257,7 +251,7 @@ export const getGraphMainInfo = (series, uploadedSeriesPage) => {
       // minorGridLineWidth: 1,
       //AUTO PLOTLINES
       plotLines: Array.from({ length: (seriesLength * 2.5) / tickCount }, (_, i) => ({
-        color: i === 0 ? "black" : i % 5 === 0 ? "#ddd" : "#eee",
+        color: i === 0 ? 'black' : i % 5 === 0 ? '#ddd' : '#eee',
         width: i % 5 === 0 ? 1 : 0.5,
         value: i * tickCount * (uploadedSeriesPage + 1),
         zIndex: i === 0 ? 10 : 0,
@@ -265,22 +259,22 @@ export const getGraphMainInfo = (series, uploadedSeriesPage) => {
     },
     legend: {
       enabled: false,
-      align: "center",
-      verticalAlign: "bottom",
-      layout: "horizontal",
+      align: 'center',
+      verticalAlign: 'bottom',
+      layout: 'horizontal',
       itemStyle: {
-        cursor: "pointer",
+        cursor: 'pointer',
       },
       itemCheckboxStyle: {
-        position: "absolute",
-        marginTop: "1px",
+        position: 'absolute',
+        marginTop: '1px',
       },
     },
     credits: { enabled: false },
     navigator: {
       enabled: true,
       xAxis: {
-        type: "linear",
+        type: 'linear',
         labels: {
           formatter() {
             return this.value;
@@ -295,7 +289,7 @@ export const getGraphMainInfo = (series, uploadedSeriesPage) => {
 export const getCorrectSteps = (min, max) => {
   const steps = [
     0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000,
-    10000, 25000, 50000, 100000, 250000, 500000,
+    10000, 25000, 50000, 100000, 250000, 500000, 1000000, 2500000, 5000000, 10000000, 25000000,
   ];
   // const interval = max - min;
   const sumStepsArr = [];
@@ -314,10 +308,85 @@ export const getCorrectSteps = (min, max) => {
             sumStepsArr.findIndex(
               (item) =>
                 item ===
-                correctStepsArr.sort((a, b) => a - b)[Math.floor(correctStepsArr.length / 2)]
+                correctStepsArr.sort((a, b) => a - b)[Math.floor(correctStepsArr.length / 2)],
             )
           ]
       : steps[sumStepsArr.findIndex((item) => item === correctStepsArr[0])];
 
   return bestStep;
 };
+
+export const getMainOptions = (series, uploadedSeriesPage) => {
+  const mainGraphInfo = getGraphMainInfo(series, uploadedSeriesPage);
+
+  return {
+    ...mainGraphInfo,
+    yAxis: series.map((item, i) => singleMainYAxis(i, series)),
+    series: series.map((item, i) => {
+      return {
+        ...series[i],
+        yAxis: i,
+        color: 'blue',
+        max: singleMainYAxis(i, series).max,
+        min: singleMainYAxis(i, series).min,
+      };
+    }),
+  };
+};
+
+const singleMainYAxis = (id, series) => {
+  const dataValues = series[id].data.map((item) => item[1]);
+  const { min, max, step, plotLines } = getYAxisMainInfo(dataValues);
+
+  return {
+    top: `${id * (100 / series.length)}%`,
+    height: `${100 / series.length}%`,
+    offset: 0,
+    lineWidth: 1,
+    labels: {
+      x: 5,
+      align: 'left',
+    },
+    tickPositioner: function () {
+      const positions = [];
+      for (let y = plotLines[0].value; y <= plotLines[plotLines.length - 1].value; y += step) {
+        positions.push(y);
+      }
+      return positions;
+    },
+
+    plotLines,
+    max,
+    min,
+  };
+};
+
+export function saveFile(data) {
+  const convertToCsvData = (arr, sep) => {
+    const secondSep = '\r\n';
+    const escapeCell = (v) => {
+      if (v === null || v === undefined) return '';
+      const s = String(v);
+      const mustQuote = s.includes('"') || s.includes('\n') || s.includes('\r') || s.includes(sep);
+      const escaped = s.replace(/"/g, '""');
+      return mustQuote ? `"${escaped}"` : escaped;
+    };
+
+    const csv = (arr ?? []).map((row) => (row ?? []).map(escapeCell).join(sep)).join(secondSep);
+    const blobParts = ['\uFEFF', csv];
+    return blobParts;
+  };
+
+  const convertedData = convertToCsvData(data, ';');
+  const blob = new Blob(convertedData, { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'data.csv';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
+}

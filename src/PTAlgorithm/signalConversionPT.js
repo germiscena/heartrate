@@ -91,7 +91,6 @@ export function getRPeaks(signal, dataSignal) {
   const binary = signal.map((val) => (val > threshold ? 1 : 0));
   const left = [];
   const right = [];
-
   for (let i = 1; i < binary.length; i++) {
     if (binary[i - 1] === 0 && binary[i] === 1) {
       left.push(i);

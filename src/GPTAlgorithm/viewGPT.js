@@ -1,11 +1,10 @@
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
-import { analyzePT } from './mainConversionPT';
+import { detectRPeaks } from '../GPTAlgorithm/mainConversionGPT';
 import { getMainOptions } from '../utils';
 
-function ViewPT({ series, uploadedSeriesPage }) {
-  const analyzedPTSignal = analyzePT(series);
-
+function ViewGPT({ series, uploadedSeriesPage }) {
+  const analyzedGPT = detectRPeaks(series);
   const newSeries = [
     {
       name: 'V4',
@@ -15,15 +14,8 @@ function ViewPT({ series, uploadedSeriesPage }) {
       },
     },
     {
-      name: 'peaks',
-      data: analyzedPTSignal.peaks.series,
-      dataGrouping: {
-        enabled: false,
-      },
-    },
-    {
-      name: 'peaksPlusPlus',
-      data: analyzedPTSignal.peaksPlusPlus.series,
+      name: 'PEAKS',
+      data: analyzedGPT.series,
       dataGrouping: {
         enabled: false,
       },
@@ -44,4 +36,4 @@ function ViewPT({ series, uploadedSeriesPage }) {
   );
 }
 
-export default ViewPT;
+export default ViewGPT;

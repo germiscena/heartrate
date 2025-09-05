@@ -1,11 +1,10 @@
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
-import { analyzePT } from './mainConversionPT';
+import { analyzeCMD } from './mainConversionCMD';
 import { getMainOptions } from '../utils';
 
-function ViewPT({ series, uploadedSeriesPage }) {
-  const analyzedPTSignal = analyzePT(series);
-
+function ViewCMD({ series, uploadedSeriesPage, type }) {
+  const analyzedData = analyzeCMD(series, type);
   const newSeries = [
     {
       name: 'V4',
@@ -15,15 +14,8 @@ function ViewPT({ series, uploadedSeriesPage }) {
       },
     },
     {
-      name: 'peaks',
-      data: analyzedPTSignal.peaks.series,
-      dataGrouping: {
-        enabled: false,
-      },
-    },
-    {
-      name: 'peaksPlusPlus',
-      data: analyzedPTSignal.peaksPlusPlus.series,
+      name: 'PEAKS',
+      data: analyzedData.peaks,
       dataGrouping: {
         enabled: false,
       },
@@ -44,4 +36,4 @@ function ViewPT({ series, uploadedSeriesPage }) {
   );
 }
 
-export default ViewPT;
+export default ViewCMD;
