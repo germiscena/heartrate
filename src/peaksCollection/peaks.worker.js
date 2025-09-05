@@ -1,4 +1,6 @@
 /* eslint-env worker */
+/* eslint-disable no-restricted-globals */
+
 import { analyzeATN } from '../ATNAlgorithm/mainSignalConversion.js';
 import { analyzeCMD } from '../CMDAlgorithm/mainConversionCMD.js';
 import { detectRPeaks } from '../GPTAlgorithm/mainConversionGPT.js';

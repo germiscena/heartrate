@@ -262,7 +262,7 @@ function App() {
             Сохранить результат
           </button>
           <button
-            style={{ marginLeft: '10px', ...(currentData === null ? blockedStyle : activeStyle) }}
+            style={{ marginLeft: '10px', ...(currentData !== 0 ? blockedStyle : activeStyle) }}
             onClick={() => getPeaksData('ideal')}
           >
             Сохранить результат с идеальным файлом traces
